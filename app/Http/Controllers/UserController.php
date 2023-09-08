@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class UserController extends Controller
 {
     public function showUsers(){
-        $users = DB::table('users')->get();
+        $users = DB::table('users')->paginate(4,['*']);
         return view('allusers',['data'=>$users]);
     }
     public function singleUser(string $id){ 
@@ -20,31 +20,36 @@ class UserController extends Controller
             return view('notFound');
         }
     }
-    public function addUser(){
+    public function addUser(Request $req){
         $user = DB::table('users')->insertOrIgnore(
             [
-                'name' => "qwe xyz",
-                'email' => "qwe@xyz",
-                'age' => 21,
-                'city' => "jmu",
+                'name' => $req->username,
+                'email' => $req->useremail,
+                'age' => $req->userage,
+                'city' => $req->usercity,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
             if($user){
-                echo "<h1>Data Added Successfully</h1>";
+                return redirect()->route('home');
+                // echo "<h1>Data Added Successfully</h1>";
             }
             else{
                 echo "<h1>Data Not added </h1>";
             }
     }
-    public function updateUser(){
+    public function updateUser(Request $req,$id){
         $user = DB::table('users')
-        ->where('id',3)
-        ->increment(
-           'age'
-            );
+        ->where('id',$id)
+        ->update([
+            'name' => $req->username,
+            'email' => $req->useremail,
+            'age' => $req->userage,
+            'city' => $req->usercity,
+            'updated_at' => now(),
+            ]);
             if($user){
-                echo "<h1>Data Updated Successfully</h1>";
+                return redirect()->route('home');
             }
             else{
                 echo "<h1>Data Not Updated </h1>";
@@ -61,6 +66,9 @@ class UserController extends Controller
             else{
                 echo "<h1>Data Not Deleted </h1>";
             }
-
+    }
+    public function updatePage(string $id){
+        $user = DB::table('users')->find($id);
+        return view('updateuser',['data' => $user]);
     }
 }

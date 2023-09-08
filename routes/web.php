@@ -4,9 +4,13 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
-  
-Route::get('/', [UserController::class,'showUsers']);
-Route::get('/user/{id?}', [UserController::class,'singleUser'])->name('view.user')->whereNumber('id');
-Route::get('/add', [UserController::class,'addUser']);
-Route::get('/update', [UserController::class,'updateUser']);
-Route::get('/delete', [UserController::class,'deleteUser']);
+Route::controller(UserController::class)->group(function(){
+    Route::get('/', 'showUsers')->name('home');
+    Route::get('/user/{id?}', 'singleUser')->name('view.user')->whereNumber('id');
+    Route::post('/add', 'addUser')->name('addUser');
+    Route::put('/update/{id}', 'updateUser')->name('update.user');
+    Route::get('/updatepage/{id?}', 'updatePage')->name('update.page')->whereNumber('id');
+    Route::get('/delete', 'deleteUser');
+});
+
+Route::view('newuser','/addUser');
